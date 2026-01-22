@@ -1,0 +1,52 @@
+name: Gym Tracker
+
+on:
+  schedule:
+    # Runs every 15 minutes
+    - cron: '*/15 * * * *'
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  collect-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: pip install requests
+    
+    - name: Download existing database
+      continue-on-error: true
+      run: |
+        # Try to download the database artifact from previous run
+        mkdir -p data
+    
+    - name: Restore database from cache
+      uses: actions/cache@v3
+      with:
+        path: gym_data.db
+        key: gym-database-${{ github.run_id }}
+        restore-keys: |
+          gym-database-
+    
+    - name: Collect gym data
+      run: python collect_once.py
+    
+    - name: Save database to cache
+      uses: actions/cache/save@v3
+      with:
+        path: gym_data.db
+        key: gym-database-${{ github.run_id }}
+    
+    - name: Upload database as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: gym-database
+        path: gym_data.db
+        retention-days: 90
