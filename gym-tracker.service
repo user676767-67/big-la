@@ -1,0 +1,18 @@
+[Unit]
+Description=UCLA Gym Activity Tracker
+After=network.target
+
+[Service]
+Type=simple
+User=YOUR_USERNAME
+WorkingDirectory=/path/to/ucla-gym-tracker
+ExecStart=/usr/bin/python3 collector.py
+Restart=always
+RestartSec=10
+
+# Logging
+StandardOutput=append:/var/log/gym-tracker.log
+StandardError=append:/var/log/gym-tracker-error.log
+
+[Install]
+WantedBy=multi-user.target
