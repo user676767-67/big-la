@@ -2,7 +2,7 @@ name: Gym Tracker
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '*/15 * * * *' # Scheduled run every 15 minutes
   push:
     branches:
       - main
